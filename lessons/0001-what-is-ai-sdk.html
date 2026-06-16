@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0001 - What is the AI SDK?</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #5f6f7a;
+      --line: #d9e0e5;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --wrong: #9f1239;
+      --right: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.58 ui-serif, Georgia, "Times New Roman", serif;
+    }
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+    h1, h2 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.12;
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 23px;
+      margin: 40px 0 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+    p, li {
+      max-width: 70ch;
+    }
+    a { color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      background: #edf4f2;
+      border-radius: 4px;
+      padding: 0.1em 0.28em;
+      font-size: 0.92em;
+    }
+    pre {
+      background: #172026;
+      color: #f8fafc;
+      overflow-x: auto;
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+    .kicker {
+      color: var(--accent);
+      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .summary {
+      color: var(--muted);
+      font-size: 19px;
+      margin-bottom: 28px;
+    }
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 16px;
+      margin: 24px 0;
+      color: #314149;
+    }
+    .quiz {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      font: 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    button:hover { border-color: var(--accent); }
+    .feedback {
+      min-height: 24px;
+      margin-top: 12px;
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+    .next {
+      margin-top: 36px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: white; }
+      main { padding: 24px; }
+      button { border-color: #aaa; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">Lesson 0001 / AI SDK Basics</div>
+    <h1>What is the AI SDK?</h1>
+    <p class="summary">
+      이번 lesson의 목표는 AI SDK를 "모델 호출 라이브러리"가 아니라
+      AI 앱을 만드는 TypeScript 표준 계층으로 보는 것이다.
+    </p>
+
+    <h2>핵심 개념</h2>
+    <p>
+      <a href="https://ai-sdk.dev/docs/introduction">공식 소개 문서</a>는 AI SDK를
+      React, Next.js, Vue, Svelte, Node.js 등에서 AI 앱과 에이전트를 만들기 위한
+      TypeScript toolkit으로 설명한다. 중요한 점은 provider마다 다른 호출 방식을
+      앱 코드에서 직접 떠안지 않게 해 준다는 것이다.
+    </p>
+    <p>
+      그래서 AI SDK를 배울 때 첫 mental model은 이렇다.
+      <strong>내 앱은 AI SDK의 공통 API를 호출하고, AI SDK가 provider별 차이를 흡수한다.</strong>
+    </p>
+
+    <div class="callout">
+      Course anchor: 01. AI SDK Basics -> 1. What is the AI SDK?
+    </div>
+
+    <h2>첫 번째 API 감각</h2>
+    <p>
+      가장 작은 단위는 <code>generateText</code>다.
+      텍스트를 한 번 생성하고 완료된 결과를 받는다. 스트리밍이 필요하면 같은 축에서
+      <code>streamText</code>로 넘어간다.
+    </p>
+
+    <pre><code>import { generateText } from "ai";
+
+const { text } = await generateText({
+  model: "anthropic/claude-sonnet-4.5",
+  prompt: "Write a one-sentence project update.",
+});
+
+console.log(text);</code></pre>
+
+    <p>
+      위 코드는 provider별 SDK를 직접 다루기보다 AI SDK의 공통 함수에
+      <code>model</code>과 <code>prompt</code>를 넘기는 형태다.
+      다음 lesson에서는 이 코드를 실제로 실행할 수 있는 최소 프로젝트 형태로 바꾼다.
+    </p>
+
+    <div class="callout">
+      <code>"anthropic/claude-sonnet-4.5"</code>처럼 <code>provider/model</code> 문자열을 바로 넘기는 건
+      v6의 AI Gateway 글로벌 provider 기능이다. 모델 버전 숫자는 시점에 따라 바뀌므로
+      (예: 더 최신 Sonnet) 항상 최신 모델명은 공식 문서에서 확인한다.
+    </div>
+
+    <h2>Retrieval check</h2>
+    <div class="quiz" aria-label="retrieval practice quiz">
+      <p><strong>질문:</strong> AI SDK를 쓰는 가장 직접적인 이유는?</p>
+      <div class="choices">
+        <button data-answer="wrong">모델의 토큰화를 완전히 제거한다</button>
+        <button data-answer="right">provider 차이를 공통 API로 줄인다</button>
+        <button data-answer="wrong">프롬프트 작성을 자동으로 없앤다</button>
+      </div>
+      <div class="feedback" id="feedback" role="status"></div>
+    </div>
+
+    <h2>Primary source</h2>
+    <p>
+      오늘 읽을 공식 자료:
+      <a href="https://ai-sdk.dev/docs/introduction">AI SDK Introduction</a>.
+      참고 카드:
+      <a href="../reference/0001-ai-sdk-core-map.html">AI SDK Core Map</a>.
+    </p>
+
+    <p class="next">
+      막히는 부분이 있으면 에이전트에게 바로 질문하라. 다음 lesson 후보:
+      "How To Take This Course" 또는 바로 "Generating Text".
+    </p>
+  </main>
+
+  <script>
+    const feedback = document.querySelector("#feedback");
+    document.querySelectorAll("button[data-answer]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const right = button.dataset.answer === "right";
+        feedback.className = right ? "feedback right" : "feedback wrong";
+        feedback.textContent = right
+          ? "맞다. AI SDK는 provider별 차이를 공통 TypeScript API로 줄인다."
+          : "아니다. AI SDK는 provider 차이를 줄이지만 토큰화나 프롬프트 자체를 없애지는 않는다.";
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI SDK Core Map</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1f2933;
+      --muted: #62717f;
+      --line: #d8dee4;
+      --paper: #fbfaf7;
+      --accent: #0f766e;
+    }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.55 ui-serif, Georgia, "Times New Roman", serif;
+    }
+    main {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+    h1, h2 {
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+    h1 {
+      font-size: 38px;
+      margin: 0 0 8px;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 36px 0 10px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+    p, li {
+      max-width: 70ch;
+    }
+    .kicker {
+      color: var(--accent);
+      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 16px;
+      font: 14px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.94em;
+      background: #eef3f2;
+      padding: 0.1em 0.28em;
+      border-radius: 4px;
+    }
+    a {
+      color: var(--accent);
+    }
+    @media print {
+      body { background: white; }
+      main { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">Reference 0001</div>
+    <h1>AI SDK Core Map</h1>
+    <p>
+      AI SDK는 provider 차이를 가리는 TypeScript 계층이다.
+      가장 먼저 익힐 축은 <code>generateText</code>, <code>streamText</code>,
+      structured output(<code>output</code> 옵션), <code>tools</code>, UI message streams다.
+    </p>
+
+    <h2>Core primitives</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Primitive</th>
+          <th>Use when</th>
+          <th>First question</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>generateText</code></td>
+          <td>완성된 텍스트나 structured output이 필요할 때</td>
+          <td>응답 전체를 기다려도 되는가?</td>
+        </tr>
+        <tr>
+          <td><code>streamText</code></td>
+          <td>터미널, HTTP, UI로 점진적 응답을 보내야 할 때</td>
+          <td>중간 상태를 사용자에게 보여줄 것인가?</td>
+        </tr>
+        <tr>
+          <td>structured output</td>
+          <td>객체, 배열, enum 같은 구조화된 결과가 필요할 때</td>
+          <td>schema로 결과 형태를 검증해야 하는가?</td>
+        </tr>
+        <tr>
+          <td><code>tools</code></td>
+          <td>모델이 코드, DB, API, MCP 서버를 호출해야 할 때</td>
+          <td>모델 혼자 답하면 안 되고 외부 행동이 필요한가?</td>
+        </tr>
+        <tr>
+          <td>UI messages</td>
+          <td>프론트엔드 채팅 상태, tool state, metadata를 다룰 때</td>
+          <td>사용자에게 어떤 message part를 보여줄 것인가?</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      참고: structured output은 별도 함수가 아니라
+      <code>generateText</code>/<code>streamText</code>의 <code>output</code> 옵션이다.
+      <code>import { Output } from "ai"</code> 후
+      <code>output: Output.object({ schema })</code> 형태로 schema를 넘기고
+      결과는 <code>result.output</code>에서 받는다.
+    </p>
+
+    <h2>Primary sources</h2>
+    <ul>
+      <li><a href="https://ai-sdk.dev/docs/introduction">AI SDK Introduction</a></li>
+      <li><a href="https://ai-sdk.dev/docs/ai-sdk-core/generating-text">Generating and Streaming Text</a></li>
+      <li><a href="https://ai-sdk.dev/docs/reference/ai-sdk-core">AI SDK Core Reference</a></li>
+    </ul>
+  </main>
+</body>
+</html>

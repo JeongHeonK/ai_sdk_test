@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0002 - How To Start The AI SDK v6 Course</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #5c6973;
+      --line: #d8dee4;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --right: #166534;
+      --wrong: #9f1239;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.58 ui-serif, Georgia, "Times New Roman", serif;
+    }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.14;
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 23px;
+      margin: 40px 0 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 20px 0 6px;
+    }
+    p, li {
+      max-width: 72ch;
+    }
+    a { color: var(--accent); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #edf4f2;
+      border-radius: 4px;
+      padding: 0.1em 0.28em;
+      font-size: 0.92em;
+    }
+    .kicker {
+      color: var(--accent);
+      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .summary {
+      color: var(--muted);
+      font-size: 19px;
+      margin-bottom: 28px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .step, .quiz {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 15px;
+    }
+    .routine {
+      padding-left: 24px;
+    }
+    .routine li {
+      margin: 10px 0;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      font: 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    button:hover { border-color: var(--accent); }
+    .feedback {
+      min-height: 24px;
+      margin-top: 12px;
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+    @media print {
+      body { background: white; }
+      main { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">Lesson 0002 / AI SDK Basics</div>
+    <h1>How To Start The Course</h1>
+    <p class="summary">
+      목표는 AI SDK v6 전체 숙련이다. 시작은 한 프레임워크 튜토리얼을 끝까지 미는 것이 아니라,
+      Core primitive를 작게 실행하고 각 개념을 UI와 agent로 확장하는 방식이 좋다.
+    </p>
+
+    <h2>오늘 할 일</h2>
+    <ol class="routine">
+      <li><a href="0001-what-is-ai-sdk.html">0001 - What is the AI SDK?</a>를 5분 안에 읽고 quiz를 푼다.</li>
+      <li><a href="../reference/0001-ai-sdk-core-map.html">AI SDK Core Map</a>에서 다섯 primitive 이름을 소리 내어 설명한다.</li>
+      <li><a href="https://ai-sdk.dev/docs/introduction">공식 Introduction</a>을 열고 Core와 UI의 차이를 한 문장으로 적는다.</li>
+      <li>다음 lesson에서 <code>generateText</code>를 실행할 준비를 한다.</li>
+    </ol>
+
+    <h2>학습 루프</h2>
+    <div class="grid">
+      <section class="step">
+        <h3>1. Read</h3>
+        <p>공식 문서에서 필요한 최소 범위만 읽는다. 한 번에 API reference 전체를 외우지 않는다.</p>
+      </section>
+      <section class="step">
+        <h3>2. Run</h3>
+        <p>작은 TypeScript 예제로 바로 실행한다. 텍스트, 스트림, 객체, tool을 각각 분리해 본다.</p>
+      </section>
+      <section class="step">
+        <h3>3. Recall</h3>
+        <p>lesson quiz와 짧은 자기 설명으로 기억을 꺼낸다. 읽은 느낌이 아니라 회상을 기준으로 삼는다.</p>
+      </section>
+      <section class="step">
+        <h3>4. Connect</h3>
+        <p>Core에서 배운 primitive를 UI, persistence, evals, workflows에 연결한다.</p>
+      </section>
+    </div>
+
+    <h2>처음 5개 lesson의 순서</h2>
+    <ol class="routine">
+      <li><strong>What is the AI SDK?</strong> provider 차이를 줄이는 공통 TypeScript 계층으로 이해한다.</li>
+      <li><strong>How To Take This Course</strong> 지금 lesson처럼 공부 루프를 고정한다.</li>
+      <li><strong>V5 to V6 Breaking Changes</strong> v6 문서 구조와 바뀐 mental model을 훑는다.</li>
+      <li><strong>Choosing Your Model</strong> provider, model capability, gateway/provider 직접 호출을 구분한다.</li>
+      <li><strong>Generating Text</strong> <code>generateText</code>를 실제로 실행한다.</li>
+    </ol>
+
+    <h2>Retrieval check</h2>
+    <div class="quiz" aria-label="retrieval practice quiz">
+      <p><strong>질문:</strong> AI SDK v6를 넓게 마스터하려면 첫 실습 축은 무엇이어야 할까?</p>
+      <div class="choices">
+        <button data-answer="wrong">프레임워크 튜토리얼만 계속 따라가기</button>
+        <button data-answer="right">Core primitive를 작게 실행하기</button>
+        <button data-answer="wrong">모든 reference를 먼저 외우기</button>
+      </div>
+      <div class="feedback" id="feedback" role="status"></div>
+    </div>
+
+    <h2>Primary sources</h2>
+    <p>
+      공식 문서 기준점은
+      <a href="https://ai-sdk.dev/docs/introduction">Introduction</a>,
+      <a href="https://ai-sdk.dev/docs/getting-started">Getting Started</a>,
+      <a href="https://ai-sdk.dev/docs/ai-sdk-core/generating-text">Generating Text</a>다.
+      막히는 부분은 에이전트에게 바로 질문하라.
+    </p>
+  </main>
+
+  <script>
+    const feedback = document.querySelector("#feedback");
+    document.querySelectorAll("button[data-answer]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const right = button.dataset.answer === "right";
+        feedback.className = right ? "feedback right" : "feedback wrong";
+        feedback.textContent = right
+          ? "맞다. 작은 Core primitive를 먼저 실행해야 이후 UI, agent, persistence로 연결하기 쉽다."
+          : "아니다. 넓게 마스터하려면 reference 암기나 프레임워크 편식보다 Core primitive 실행이 먼저다.";
+      });
+    });
+  </script>
+</body>
+</html>
