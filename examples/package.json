@@ -1,0 +1,16 @@
+{
+  "name": "ai-sdk-examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "0003": "tsx --env-file=.env 0003-generating-text.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "latest",
+    "ai": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "tsx": "latest"
+  }
+}
