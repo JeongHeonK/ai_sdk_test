@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0005 - Choosing Your Model & V5→V6 변경점</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #5f6f7a;
+      --line: #d9e0e5;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --wrong: #9f1239;
+      --right: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.58 ui-serif, Georgia, "Times New Roman", serif;
+    }
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.12;
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 23px;
+      margin: 40px 0 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 22px 0 6px;
+    }
+    p, li {
+      max-width: 70ch;
+    }
+    a { color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      background: #edf4f2;
+      border-radius: 4px;
+      padding: 0.1em 0.28em;
+      font-size: 0.92em;
+    }
+    pre {
+      background: #172026;
+      color: #f8fafc;
+      overflow-x: auto;
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+      color: inherit;
+    }
+    .kicker {
+      color: var(--accent);
+      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .summary {
+      color: var(--muted);
+      font-size: 19px;
+      margin-bottom: 28px;
+    }
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 16px;
+      margin: 24px 0;
+      color: #314149;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 18px 0;
+      font-size: 15px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef3f2; }
+    .exercise {
+      background: #f0f7f5;
+      border: 1px solid #bfe0d8;
+      border-radius: 8px;
+      padding: 18px;
+      margin: 24px 0;
+    }
+    .exercise h3 { margin-top: 0; }
+    .quiz {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      font: 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    button:hover { border-color: var(--accent); }
+    .feedback {
+      min-height: 24px;
+      margin-top: 12px;
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+    .next {
+      margin-top: 36px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: white; }
+      main { padding: 24px; }
+      button { border-color: #aaa; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">Lesson 0005 / AI SDK Basics</div>
+    <h1>Choosing Your Model &amp; V5→V6 변경점</h1>
+    <p class="summary">
+      커리큘럼 01.3(V5→V6 Breaking Changes)과 01.4(Choosing Your Model)를 하나로 묶었다.
+      두 주제는 결국 "v6에서 모델을 어떻게 고르고 어떻게 연결하느냐"라는 같은 질문의
+      앞뒤이기 때문이다.
+    </p>
+
+    <!-- ========== PART A ========== -->
+    <h2>Part A. 모델을 고르고 연결하는 세 경로</h2>
+    <p>
+      lesson 0003~0004에서 본 그대로다. <code>generateText</code>/<code>streamText</code>의
+      <code>model</code> 인자에 <strong>무엇을 넘기느냐</strong>가 곧 "어떤 모델을 쓰느냐"다.
+      방법은 셋이다.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>경로</th><th>코드</th><th>언제</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>① AI Gateway 문자열</strong><br>(v6 기본 global provider)</td>
+          <td><code>model: "anthropic/claude-sonnet-4.5"</code><br>import 불필요</td>
+          <td>클라우드 모델을 가장 간단히. 여러 provider를 문자열만 바꿔 비교할 때. (유료, <code>AI_GATEWAY_API_KEY</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>② 전용 provider 패키지</strong></td>
+          <td><code>import { openai } from "@ai-sdk/openai"</code><br><code>model: openai("gpt-5.4")</code></td>
+          <td>그 provider 고유 옵션(safety, reasoning 설정 등)이 필요할 때. 직접 키 관리.</td>
+        </tr>
+        <tr>
+          <td><strong>③ OpenAI 호환 provider</strong></td>
+          <td><code>createOpenAICompatible({ baseURL })</code><br><code>model: lmstudio(modelId)</code></td>
+          <td>LM Studio·자체 호스팅 등 임의 OpenAI 호환 서버. (우리가 쓰는 무료 로컬 경로)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      Course anchor: 01. AI SDK Basics -> 3. V5 to V6 Breaking Changes + 4. Choosing Your Model
+    </div>
+
+    <h3>고를 때 따지는 축</h3>
+    <p>
+      "가장 좋은 모델" 같은 건 없다. 작업에 맞춰 트레이드오프를 잡는다.
+    </p>
+    <ul>
+      <li><strong>능력(capability)</strong> — 추론(reasoning), 비전(이미지 입력), tool calling, 긴 컨텍스트 지원 여부. 필요 없는 능력에 돈 쓰지 않는다.</li>
+      <li><strong>비용</strong> — 토큰당 단가. 분류·요약 같은 단순 작업엔 작은/싼 모델로 충분하다.</li>
+      <li><strong>지연(latency)</strong> — 사용자가 기다리는 UI라면 빠른 모델 + 스트리밍.</li>
+      <li><strong>로컬 vs 클라우드</strong> — 프라이버시·오프라인·무료가 필요하면 로컬(③). 최고 성능·고급 기능이 필요하면 클라우드(①②).</li>
+    </ul>
+    <p>
+      핵심은, 이 선택이 <strong><code>model</code> 한 줄에 갇혀 있다</strong>는 점이다.
+      나머지 코드(<code>generateText</code> 호출, 결과 처리)는 모델을 바꿔도 그대로다.
+      그래서 "싼 모델로 개발 → 본번 클라우드 모델로 교체" 같은 전환이 한 줄 수정으로 끝난다.
+    </p>
+
+    <!-- ========== PART B ========== -->
+    <h2>Part B. V5→V6에서 실제로 바뀐 것 (확정분)</h2>
+    <p>
+      v6는 v5 코드를 대부분 그대로 받지만, 알아둘 변경이 있다. 아래는
+      <strong>공식 6.0 마이그레이션 가이드에서 확인된 항목</strong>만 추렸다.
+      전체 목록은 하단 Primary sources의 가이드를 본다.
+    </p>
+
+    <h3>1. AI Gateway 문자열이 정식 경로가 됐다</h3>
+    <p>
+      <code>"provider/model"</code> 문자열을 global provider로 바로 쓰는 방식(위 표 ①)이
+      v6에서 1급 기능이다. 우리가 0003 레슨부터 써온 그 형식이다.
+    </p>
+
+    <h3>2. 에이전트 클래스 이름·옵션 변경</h3>
+    <p>
+      v5의 <code>Experimental_Agent</code>가 v6에서 <code>ToolLoopAgent</code>로 정식화됐다.
+      함께 바뀐 두 가지: <code>system</code> → <code>instructions</code>,
+      그리고 <code>stopWhen</code>이 기본값 <code>stepCountIs(20)</code>을 갖게 됐다(생략 가능).
+    </p>
+    <pre><code>// v5
+import { Experimental_Agent as Agent, stepCountIs } from "ai";
+const agent = new Agent({
+  model,
+  system: "You are a helpful assistant.",
+  tools: { /* ... */ },
+  stopWhen: stepCountIs(20), // 직접 지정 필요
+});
+
+// v6
+import { ToolLoopAgent } from "ai";
+const agent = new ToolLoopAgent({
+  model,
+  instructions: "You are a helpful assistant.", // system → instructions
+  tools: { /* ... */ },
+  // stopWhen 생략 시 stepCountIs(20)가 기본
+});</code></pre>
+
+    <h3>3. 일부 provider 메타데이터 키 변경</h3>
+    <p>
+      예) Google Vertex provider는 <code>providerOptions</code>/<code>providerMetadata</code>의
+      키가 <code>google</code> → <code>vertex</code>로 바뀌었다. 쓰는 provider의 가이드를 확인한다.
+    </p>
+
+    <div class="callout">
+      주의: 이 레슨은 <strong>확정된 v6 변경분만</strong> 싣는다.
+      <code>maxTokens → maxOutputTokens</code>, <code>ai/react → @ai-sdk/react</code> 등은
+      <strong>v5.0</strong>에서 바뀐 것이라 "v5→v6"으로 외우면 헷갈린다.
+      자기 코드의 시작 버전이 v4 이하라면 v5.0 가이드도 함께 봐야 한다.
+    </div>
+
+    <div class="exercise">
+      <h3>직접 해보기: v5 에이전트 코드를 v6로 마이그레이션</h3>
+      <p>
+        아래는 v5 스타일 코드다. <strong>v6로 고쳐 써라</strong>. 바꿀 곳은 세 군데다 —
+        import, 클래스 이름, 그리고 옵션 하나. (정답이 명확한 comprehension 체크다.)
+      </p>
+      <pre><code>// 이걸 v6로 고쳐라
+import { Experimental_Agent as Agent, stepCountIs } from "ai";
+
+const agent = new Agent({
+  model: "anthropic/claude-sonnet-4.5",
+  system: "You are a concise research assistant.",
+  tools: { /* ... */ },
+  stopWhen: stepCountIs(20),
+});</code></pre>
+      <p>
+        힌트: (1) 어떤 클래스로 바뀌었나? (2) 페르소나를 넣던 옵션 이름은? (3) 기본값이
+        생겨서 생략 가능해진 옵션은? — 직접 다시 적어 보고, 막히면 위 Part B.2와 비교하라.
+      </p>
+    </div>
+
+    <h2>Retrieval check</h2>
+    <div class="quiz" aria-label="retrieval practice quiz">
+      <p><strong>질문:</strong> v6에서 모델을 고르고 연결하는 방식에 대해 맞는 것은?</p>
+      <div class="choices">
+        <button data-answer="wrong">모델을 바꾸려면 generateText 호출 전체를 다시 작성해야 한다</button>
+        <button data-answer="right">model 인자에 무엇을 넘기느냐로 결정되며, 나머지 코드는 그대로다</button>
+        <button data-answer="wrong">로컬 모델은 반드시 AI Gateway 문자열로 불러야 한다</button>
+      </div>
+      <div class="feedback" id="feedback" role="status"></div>
+    </div>
+
+    <h2>Primary sources</h2>
+    <p>
+      오늘 읽을 공식 자료:
+      <a href="https://ai-sdk.dev/docs/migration-guides/migration-guide-6-0">AI SDK 6.0 Migration Guide</a>,
+      <a href="https://ai-sdk.dev/docs/getting-started/choosing-a-provider">Choosing a Provider</a>.
+      참고 카드:
+      <a href="../reference/0001-ai-sdk-core-map.html">AI SDK Core Map</a>.
+    </p>
+
+    <p class="next">
+      막히면 에이전트에게 바로 질문하라. 다음 lesson (커리큘럼 01.7):
+      "UI Message Streams" — 여기서부터 터미널을 벗어나 프론트엔드(UI)로 스트리밍이 넘어간다.
+    </p>
+  </main>
+
+  <script>
+    const feedback = document.querySelector("#feedback");
+    document.querySelectorAll("button[data-answer]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const right = button.dataset.answer === "right";
+        feedback.className = right ? "feedback right" : "feedback wrong";
+        feedback.textContent = right
+          ? "맞다. 모델 선택은 model 인자 한 줄에 갇혀 있고, 문자열·전용 provider·OpenAI 호환 중 무엇을 넘기든 호출 코드는 동일하다."
+          : "아니다. 모델 교체는 model 한 줄 수정으로 끝나고, 로컬 모델은 Gateway 문자열이 아니라 createOpenAICompatible 같은 provider로 연결한다.";
+      });
+    });
+  </script>
+</body>
+</html>
