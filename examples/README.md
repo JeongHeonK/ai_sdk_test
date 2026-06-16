@@ -11,7 +11,8 @@ lesson 실습용 실행 가능한 TypeScript 예제. 모델은 **LM Studio 로�
 ## 실행
 
 ```bash
-npm run 0003   # 0003-generating-text.ts 실행
+npm run 0003   # 0003-generating-text.ts 실행 (generateText)
+npm run 0004   # 0004-streaming-text.ts 실행 (streamText)
 ```
 
 API 키는 필요 없다. AI SDK가 `.env`의 로컬 서버 주소로 직접 호출한다.

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>0004 - Streaming Text To The Terminal</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #5f6f7a;
+      --line: #d9e0e5;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --wrong: #9f1239;
+      --right: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.58 ui-serif, Georgia, "Times New Roman", serif;
+    }
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 56px 24px 72px;
+    }
+    h1, h2, h3 {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.12;
+    }
+    h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-size: 23px;
+      margin: 40px 0 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 22px;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 22px 0 6px;
+    }
+    p, li {
+      max-width: 70ch;
+    }
+    a { color: var(--accent); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    code {
+      background: #edf4f2;
+      border-radius: 4px;
+      padding: 0.1em 0.28em;
+      font-size: 0.92em;
+    }
+    pre {
+      background: #172026;
+      color: #f8fafc;
+      overflow-x: auto;
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+      color: inherit;
+    }
+    .kicker {
+      color: var(--accent);
+      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .summary {
+      color: var(--muted);
+      font-size: 19px;
+      margin-bottom: 28px;
+    }
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 4px 0 4px 16px;
+      margin: 24px 0;
+      color: #314149;
+    }
+    .exercise {
+      background: #f0f7f5;
+      border: 1px solid #bfe0d8;
+      border-radius: 8px;
+      padding: 18px;
+      margin: 24px 0;
+    }
+    .exercise h3 { margin-top: 0; }
+    .quiz {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      font: 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 10px 12px;
+      text-align: left;
+    }
+    button:hover { border-color: var(--accent); }
+    .feedback {
+      min-height: 24px;
+      margin-top: 12px;
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+    .feedback.right { color: var(--right); }
+    .feedback.wrong { color: var(--wrong); }
+    .next {
+      margin-top: 36px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      color: var(--muted);
+    }
+    @media print {
+      body { background: white; }
+      main { padding: 24px; }
+      button { border-color: #aaa; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="kicker">Lesson 0004 / AI SDK Basics</div>
+    <h1>Streaming Text To The Terminal</h1>
+    <p class="summary">
+      이번 lesson의 목표는 <code>generateText</code>로 짠 코드를
+      <code>streamText</code>로 바꿔 <strong>토큰이 도착하는 대로</strong>
+      터미널에 출력하는 것이다. 바뀌는 건 함수 하나와 결과를 소비하는 방식뿐이다.
+    </p>
+
+    <h2>기다리지 않고 흘려보낸다</h2>
+    <p>
+      <code>generateText</code>는 완성된 응답을 한 번에 받는다. 긴 답변일수록
+      사용자는 첫 글자를 보기까지 오래 기다린다. <code>streamText</code>는 모델이
+      만드는 즉시 조각(token delta)을 흘려보내, 체감 지연을 크게 줄인다.
+      챗봇·터미널 출력처럼 "진행 중인 모습"을 보여줘야 하는 작업에 맞다.
+    </p>
+
+    <h2>핵심 차이: await 위치가 바뀐다</h2>
+    <p>
+      <code>streamText</code>는 호출 자체에 <code>await</code>를 붙이지 않는다.
+      즉시 result를 반환하고, <code>result.textStream</code>을 <code>for await</code>로
+      돌면서 조각을 받는다. <code>usage</code>·<code>finishReason</code>·<code>text</code>는
+      스트림이 <strong>끝난 뒤</strong> resolve되는 Promise라, 쓸 때 <code>await</code>한다.
+    </p>
+
+    <pre><code>import { streamText } from "ai";
+
+// await 없음 — 즉시 result를 받는다
+const result = streamText({
+  model: "anthropic/claude-sonnet-4.5",
+  prompt: "Invent a new holiday and describe its traditions.",
+});
+
+// 조각이 도착하는 대로 출력 (개행 없이 이어 붙이려면 process.stdout.write)
+for await (const textPart of result.textStream) {
+  process.stdout.write(textPart);
+}
+
+// 스트림이 끝난 뒤에야 resolve되는 값들
+console.log("\n", await result.usage);
+console.log(await result.finishReason);</code></pre>
+
+    <div class="callout">
+      Course anchor: 01. AI SDK Basics -> 6. Streaming Text To The Terminal
+    </div>
+
+    <h2>console.log 대신 process.stdout.write</h2>
+    <p>
+      <code>console.log</code>은 호출마다 개행을 붙인다. 스트림 조각마다 줄이
+      바뀌면 출력이 깨진다. <code>process.stdout.write(textPart)</code>는 개행 없이
+      이어 붙여, 한 줄에 글자가 차오르는 "타이핑" 효과를 만든다.
+    </p>
+
+    <h2>generateText와 같은 점 / 다른 점</h2>
+    <ul>
+      <li><strong>같다:</strong> <code>model</code>, <code>system</code>, <code>prompt</code>, <code>messages</code> 등 입력 옵션은 동일하다.</li>
+      <li><strong>같다:</strong> 끝나면 <code>text</code>·<code>usage</code>·<code>finishReason</code>을 모두 얻을 수 있다.</li>
+      <li><strong>다르다:</strong> 호출에 <code>await</code>를 붙이지 않는다. 결과를 <code>textStream</code>으로 소비한다.</li>
+      <li><strong>다르다:</strong> 메타데이터는 Promise라 <code>await result.usage</code>처럼 받는다.</li>
+    </ul>
+
+    <h2>실행 준비 (Run)</h2>
+    <p>
+      provider 설정은 lesson 0003과 동일하다. AI Gateway를 쓰면
+      <code>provider/model</code> 문자열 + <code>AI_GATEWAY_API_KEY</code>,
+      로컬 LM Studio를 쓰면 <code>@ai-sdk/openai-compatible</code> provider를
+      그대로 재사용한다. 바뀌는 건 <code>generateText</code> → <code>streamText</code>뿐이다.
+    </p>
+    <pre><code># 실행 (Node 20.6+ 기준)
+npx tsx --env-file=.env your-file.ts</code></pre>
+
+    <div class="exercise">
+      <h3>직접 해보기: 스트림을 어떻게 소비할지 정하라</h3>
+      <p>
+        아래 <code>for await</code> 루프의 <strong>본문을 직접 채워라</strong>.
+        이건 설계 선택이다 — 조각을 그대로 흘려보낼 수도, 모아서 가공할 수도 있다.
+      </p>
+      <pre><code>const result = streamText({
+  model: lmstudio(modelId),
+  prompt: "Write a short poem about streaming data.",
+  maxRetries: 1,
+});
+
+let charCount = 0;
+for await (const textPart of result.textStream) {
+  // TODO: 조각이 도착할 때 무엇을 할지 정하라.
+  //   - 가장 단순: process.stdout.write(textPart) 로 즉시 출력
+  //   - 응용: charCount에 길이를 누적, 또는 특정 단어가 나오면 표시 등
+}
+
+console.log("\n--- usage ---", await result.usage);</code></pre>
+      <p>
+        고려할 점: (1) 즉시 출력은 가장 정직한 스트리밍 데모다. (2) 누적/가공을
+        넣으면 "흘러오는 데이터를 다룬다"는 감각이 생긴다. (3) 개행을 직접 넣지
+        않으면 한 줄에 차오른다 — 출력 형태도 선택이다.
+      </p>
+    </div>
+
+    <h2>Retrieval check</h2>
+    <div class="quiz" aria-label="retrieval practice quiz">
+      <p><strong>질문:</strong> <code>streamText</code>를 <code>generateText</code>와 비교할 때 맞는 것은?</p>
+      <div class="choices">
+        <button data-answer="wrong">호출에 await를 붙여 완성된 text를 바로 받는다</button>
+        <button data-answer="right">호출은 즉시 반환되고 textStream으로 조각을 소비한다</button>
+        <button data-answer="wrong">usage와 finishReason은 스트리밍을 쓰면 얻을 수 없다</button>
+      </div>
+      <div class="feedback" id="feedback" role="status"></div>
+    </div>
+
+    <h2>Primary sources</h2>
+    <p>
+      오늘 읽을 공식 자료:
+      <a href="https://ai-sdk.dev/docs/ai-sdk-core/generating-text">Generating and Streaming Text</a>,
+      <a href="https://ai-sdk.dev/docs/reference/ai-sdk-core/stream-text">streamText Reference</a>.
+      참고 카드:
+      <a href="../reference/0001-ai-sdk-core-map.html">AI SDK Core Map</a>.
+    </p>
+
+    <p class="next">
+      막히면 에이전트에게 바로 질문하라. 다음 lesson 후보:
+      "Structured Output" (<code>output: Output.object</code>로 schema에 맞춘 JSON을 받는다).
+    </p>
+  </main>
+
+  <script>
+    const feedback = document.querySelector("#feedback");
+    document.querySelectorAll("button[data-answer]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const right = button.dataset.answer === "right";
+        feedback.className = right ? "feedback right" : "feedback wrong";
+        feedback.textContent = right
+          ? "맞다. streamText는 await 없이 즉시 result를 반환하고, textStream을 for await로 소비한다. usage/finishReason은 끝난 뒤 await로 받는다."
+          : "아니다. await는 호출이 아니라 textStream 소비와 끝난 뒤의 메타데이터(usage 등)에 붙고, 메타데이터는 스트리밍에서도 얻을 수 있다.";
+      });
+    });
+  </script>
+</body>
+</html>

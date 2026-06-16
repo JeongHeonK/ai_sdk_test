@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "0003": "tsx --env-file=.env 0003-generating-text.ts"
+    "0003": "tsx --env-file=.env 0003-generating-text.ts",
+    "0004": "tsx --env-file=.env 0004-streaming-text.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "latest",
